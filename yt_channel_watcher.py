@@ -33,7 +33,7 @@ from PyQt6.QtGui import (
 # ─── Konstanten ──────────────────────────────────────────────────────────────
 
 APP_NAME     = "YouTube Channel Watcher"
-APP_VERSION  = "1.2.0"
+APP_VERSION  = "1.2.1"
 APP_DATE     = "2026-03-22"
 APP_AUTHOR   = "Christian Diezinger"
 APP_CONTACT  = "rabenstaub@gmail.com"
@@ -575,6 +575,13 @@ Freeware - private und gewerbliche Nutzung erlaubt.
 Weitergabe nur unverändert und kostenlos gestattet.
 Eine Nutzung des Namens, Logos oder Codes für eigene kommerzielle Produkte ist ohne
 schriftliche Genehmigung nicht gestattet.
+</p>
+
+<p style='color:{DARK['accent']}; font-weight:bold;'>Gerichtsstand</p>
+<p style='color:{DARK['muted']}; font-size:12px;'>
+Gerichtsstand für alle Streitigkeiten aus oder im Zusammenhang mit dieser Software
+ist Memmingen, Deutschland. Es gilt ausschließlich deutsches Recht.
+Die Anwendung des UN-Kaufrechts (CISG) ist ausgeschlossen.
 </p>
 
 <p style='color:{DARK['accent']}; font-weight:bold;'>Impressum</p>

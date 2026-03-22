@@ -33,11 +33,13 @@ from PyQt6.QtGui import (
 # ─── Konstanten ──────────────────────────────────────────────────────────────
 
 APP_NAME     = "YouTube Channel Watcher"
-APP_VERSION  = "1.1.0"
-APP_DATE     = "2025-03-21"
+APP_VERSION  = "1.2.0"
+APP_DATE     = "2026-03-22"
 APP_AUTHOR   = "Christian Diezinger"
 APP_CONTACT  = "rabenstaub@gmail.com"
 APP_KOFI     = "https://ko-fi.com/rabenstaub"
+APP_GITHUB   = "https://github.com/Rabenstaub/yt-channel-watcher"
+APP_API_URL  = "https://api.github.com/repos/Rabenstaub/yt-channel-watcher/releases/latest"
 CONFIG_DIR  = Path(os.getenv("APPDATA", ".")) / "YTChannelWatcher"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
@@ -433,6 +435,17 @@ class VideoCard(QFrame):
         btn.clicked.connect(self._watch)
         row.addWidget(btn, 0, Qt.AlignmentFlag.AlignVCenter)
 
+        seen_btn = QPushButton("✓")
+        seen_btn.setFixedWidth(36)
+        seen_btn.setToolTip("Als gesehen markieren – aus der Liste entfernen")
+        seen_btn.setStyleSheet(
+            "QPushButton { background-color: #1a3a1a; color: #2ed573; border-radius: 6px;"
+            " padding: 7px; font-size: 14px; font-weight: bold; }"
+            "QPushButton:hover { background-color: #2a5a2a; }"
+        )
+        seen_btn.clicked.connect(self._mark_seen)
+        row.addWidget(seen_btn, 0, Qt.AlignmentFlag.AlignVCenter)
+
     def _set_thumb(self, px: QPixmap):
         try:
             scaled = px.scaled(124, 70,
@@ -444,10 +457,18 @@ class VideoCard(QFrame):
         except Exception:
             pass
 
+    def _mark_seen(self):
+        self.setVisible(False)
+        self.deleteLater()
+
     def _watch(self):
         url = self.video.get("link", "")
         if url:
             QDesktopServices.openUrl(QUrl(url))
+            # Nur automatisch ausblenden wenn Einstellung aktiv
+            cfg = load_config()
+            if cfg.get("auto_hide_seen", True):
+                QTimer.singleShot(2000, self._mark_seen)
 
 
 class ChannelRow(QFrame):
@@ -602,6 +623,32 @@ E-Mail: rabenstaub@gmail.com
         self.close()
 
 
+# ─── Update-Check Thread ─────────────────────────────────────────────────────
+
+class UpdateCheckThread(QThread):
+    update_available = pyqtSignal(str, str)  # neue Version, Download-URL
+
+    def run(self):
+        try:
+            data = http_get(APP_API_URL, timeout=10)
+            import json as _json
+            release = _json.loads(data)
+            latest  = release.get("tag_name", "").lstrip("v")
+            dl_url  = release.get("html_url", APP_GITHUB)
+
+            # Versions-Vergleich
+            def ver_tuple(v):
+                try:
+                    return tuple(int(x) for x in v.split("."))
+                except Exception:
+                    return (0,)
+
+            if ver_tuple(latest) > ver_tuple(APP_VERSION):
+                self.update_available.emit(latest, dl_url)
+        except Exception:
+            pass  # Kein Internet oder API-Fehler → still ignorieren
+
+
 # ─── Haupt-Fenster ────────────────────────────────────────────────────────────
 
 class MainWindow(QMainWindow):
@@ -622,6 +669,15 @@ class MainWindow(QMainWindow):
         self._flag_timer.timeout.connect(self._check_show_flag)
         self._flag_timer.start(500)
 
+        # Auto-Prüf-Timer
+        self._auto_check_timer = QTimer(self)
+        self._auto_check_timer.timeout.connect(self.start_fetch)
+        self._start_auto_check_timer()
+
+        # Update-Check beim Start (verzögert um 5 Sekunden)
+        self._update_thread = None
+        QTimer.singleShot(5000, self._check_for_update)
+
     # ── UI aufbauen ──────────────────────────────────────────────────────────
 
     def _build_ui(self):
@@ -633,6 +689,35 @@ class MainWindow(QMainWindow):
 
         vbox.addWidget(self._make_header())
         vbox.addWidget(self._make_tabbar())
+
+        # Update-Banner (anfangs versteckt)
+        self.update_banner = QWidget()
+        self.update_banner.setStyleSheet(
+            "background:#1a3a1a; border-bottom:1px solid #2ed573;"
+        )
+        banner_row = QHBoxLayout(self.update_banner)
+        banner_row.setContentsMargins(16, 6, 16, 6)
+        self.update_banner_lbl = QLabel("")
+        self.update_banner_lbl.setStyleSheet("color:#2ed573; font-size:12px;")
+        banner_row.addWidget(self.update_banner_lbl)
+        banner_row.addStretch()
+        self.update_banner_btn = QPushButton("⬇  Jetzt herunterladen")
+        self.update_banner_btn.setStyleSheet(
+            "QPushButton { background:#2ed573; color:#0a1a0a; border-radius:5px;"
+            " padding:4px 12px; font-weight:bold; font-size:12px; }"
+            "QPushButton:hover { background:#4ef593; }"
+        )
+        banner_row.addWidget(self.update_banner_btn)
+        dismiss_btn = QPushButton("✕")
+        dismiss_btn.setFixedWidth(28)
+        dismiss_btn.setStyleSheet(
+            "QPushButton { background:transparent; color:#2ed573; border:none; font-size:14px; }"
+            "QPushButton:hover { color:white; }"
+        )
+        dismiss_btn.clicked.connect(self.update_banner.hide)
+        banner_row.addWidget(dismiss_btn)
+        self.update_banner.hide()
+        vbox.addWidget(self.update_banner)
 
         self.page_videos   = self._make_page_videos()
         self.page_channels = self._make_page_channels()
@@ -802,13 +887,56 @@ class MainWindow(QMainWindow):
         self.autostart_cb.toggled.connect(self._toggle_autostart)
         cl.addWidget(self.autostart_cb)
 
+        self.autohide_cb = QCheckBox("Gesehene Videos automatisch aus der Liste entfernen")
+        self.autohide_cb.setChecked(self.config.get("auto_hide_seen", True))
+        self.autohide_cb.toggled.connect(self._toggle_autohide)
+        cl.addWidget(self.autohide_cb)
+
         hint = QLabel(
             "Beim Start prüft die App automatisch alle gespeicherten Kanäle\n"
-            "und zeigt neue Videos an. Das Fenster erscheint nur wenn etwas Neues da ist."
+            "und zeigt neue Videos an. Das Fenster erscheint nur wenn etwas Neues da ist.\n"
+            "Videos können jederzeit manuell mit dem ✓-Button ausgeblendet werden."
         )
         hint.setWordWrap(True)
         hint.setStyleSheet(f"color:{DARK['muted']}; font-size:11px;")
         cl.addWidget(hint)
+
+        # Trennlinie
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.HLine)
+        line.setStyleSheet(f"color:{DARK['border']};")
+        cl.addWidget(line)
+
+        # Auto-Prüf-Intervall
+        interval_lbl = QLabel("<b>Automatisch prüfen alle:</b>")
+        interval_lbl.setStyleSheet(f"color:{DARK['text']}; font-size:13px;")
+        cl.addWidget(interval_lbl)
+
+        interval_row = QHBoxLayout()
+        interval_row.setSpacing(8)
+        intervals = [("Aus", 0), ("1 Std.", 1), ("2 Std.", 2), ("4 Std.", 4), ("6 Std.", 6)]
+        current_interval = self.config.get("check_interval_hours", 4)
+        self._interval_btns = []
+        for label, hours in intervals:
+            btn = QPushButton(label)
+            btn.setCheckable(True)
+            btn.setChecked(hours == current_interval)
+            btn.setStyleSheet(
+                f"QPushButton {{ background:{DARK['border']}; color:{DARK['muted']};"
+                f" border-radius:6px; padding:6px 12px; font-size:12px; }}"
+                f"QPushButton:checked {{ background:{DARK['accent']}; color:white; font-weight:bold; }}"
+                f"QPushButton:hover {{ background:#3a3a5a; color:{DARK['text']}; }}"
+            )
+            btn.clicked.connect(lambda _, h=hours: self._set_interval(h))
+            interval_row.addWidget(btn)
+            self._interval_btns.append((btn, hours))
+        interval_row.addStretch()
+        cl.addLayout(interval_row)
+
+        interval_hint = QLabel("Die App prüft automatisch im Hintergrund ob neue Videos verfügbar sind.")
+        interval_hint.setWordWrap(True)
+        interval_hint.setStyleSheet(f"color:{DARK['muted']}; font-size:11px;")
+        cl.addWidget(interval_hint)
 
         vbox.addWidget(card)
 
@@ -1016,6 +1144,24 @@ class MainWindow(QMainWindow):
 
     # ── Logik ─────────────────────────────────────────────────────────────────
 
+    def _set_interval(self, hours: int):
+        self.config["check_interval_hours"] = hours
+        save_config(self.config)
+        # Buttons aktualisieren
+        for btn, h in self._interval_btns:
+            btn.setChecked(h == hours)
+        self._start_auto_check_timer()
+
+    def _start_auto_check_timer(self):
+        self._auto_check_timer.stop()
+        hours = self.config.get("check_interval_hours", 4)
+        if hours > 0:
+            self._auto_check_timer.start(hours * 60 * 60 * 1000)
+
+    def _toggle_autohide(self, on: bool):
+        self.config["auto_hide_seen"] = on
+        save_config(self.config)
+
     def _toggle_autostart(self, on: bool):
         self.config["autostart"] = on
         save_config(self.config)
@@ -1124,6 +1270,28 @@ class MainWindow(QMainWindow):
                 self.empty_lbl.show()
         except Exception as e:
             print(f"[_on_fetch_done] {e}\n{traceback.format_exc()}")
+
+    def _check_for_update(self):
+        self._update_thread = UpdateCheckThread()
+        self._update_thread.update_available.connect(self._show_update_banner)
+        self._update_thread.start()
+
+    def _show_update_banner(self, new_version: str, dl_url: str):
+        self.update_banner_lbl.setText(
+            f"🎉  Neue Version verfügbar: v{new_version}  "
+            f"(installiert: v{APP_VERSION})"
+        )
+        self.update_banner_btn.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl(dl_url))
+        )
+        self.update_banner.show()
+        # Tray-Benachrichtigung
+        self.tray.showMessage(
+            f"{APP_NAME} – Update verfügbar",
+            f"Version {new_version} ist verfügbar. Klicke auf das Fenster um zu aktualisieren.",
+            QSystemTrayIcon.MessageIcon.Information,
+            8000,
+        )
 
     def _check_show_flag(self):
         try:

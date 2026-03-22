@@ -1,0 +1,79 @@
+YouTube Channel Watcher
+Version 1.1.0  |  Veröffentlicht: 2025-03-21
+Entwickelt von Christian Diezinger
+Kontakt: rabenstaub@gmail.com
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPRESSUM
+Angaben gemäß § 5 TMG:
+
+Christian Diezinger
+Hauptstraße 26
+87772 Pfaffenhausen
+Deutschland
+E-Mail: rabenstaub@gmail.com
+
+Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:
+Christian Diezinger (Anschrift wie oben)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LIZENZ
+
+Diese Software ist Freeware.
+Private und gewerbliche Nutzung ist erlaubt.
+Weitergabe ist nur unverändert und kostenlos gestattet.
+
+Eine Nutzung des Namens, Logos oder Quellcodes für eigene
+kommerzielle Produkte ist ohne schriftliche Genehmigung
+des Autors nicht gestattet.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HAFTUNGSAUSSCHLUSS
+
+Die Nutzung dieser Software erfolgt auf eigene Gefahr.
+Der Anbieter übernimmt keine Gewähr für die Richtigkeit,
+Vollständigkeit oder Aktualität der bereitgestellten
+Funktionen und Inhalte.
+
+Es wird keine Haftung für Schäden übernommen, die direkt
+oder indirekt durch die Nutzung oder Nichtnutzung der
+Software entstehen, sofern kein nachweislich vorsätzliches
+oder grob fahrlässiges Verschulden vorliegt.
+
+Der Anbieter behält sich vor, die Software jederzeit ohne
+Ankündigung zu ändern, zu erweitern oder einzustellen.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DATENSCHUTZERKLÄRUNG
+
+Diese Software verarbeitet oder speichert keine
+personenbezogenen Daten.
+
+Es werden keine Daten an Dritte übertragen, keine
+Nutzungsdaten analysiert und keine Verbindungen zu externen
+Servern hergestellt, außer zum Abruf öffentlich zugänglicher
+YouTube-RSS-Feeds (nur die vom Nutzer selbst eingetragenen
+Kanäle).
+
+Alle Funktionen der Software laufen ausschließlich lokal
+auf dem Gerät des Nutzers.
+
+Gespeicherte Daten (Kanalliste, Einstellungen) liegen
+ausschließlich lokal unter:
+%APPDATA%\YTChannelWatcher\config.json
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DRITTANBIETER-HINWEIS
+
+Diese Software ist kein Produkt von Google LLC oder YouTube.
+"YouTube" ist eine eingetragene Marke von Google LLC.
+Die App nutzt ausschließlich öffentlich zugängliche
+RSS-Feeds und steht in keiner Verbindung zu YouTube oder
+Google LLC.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

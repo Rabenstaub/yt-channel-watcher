@@ -1,0 +1,29 @@
+YouTube Channel Watcher – Changelog
+====================================
+
+v1.1.0  (2025-03-21)
+---------------------
++ Erster-Start-Dialog mit Nutzungsbedingungen und Haftungsausschluss
++ Hilfe-Tab mit Bedienungsanleitung eingebaut
++ Ko-fi Spendenbutton in den Einstellungen
++ Vollständige Lizenz- und Datenschutztexte
++ Inno Setup Installer mit Deinstallationsroutine
+* Versionskonstanten und Metadaten ergänzt
+* Stabilität: Thread-Referenzen verbessert
+
+v1.0.1  (2025-03-21)
+---------------------
+* Absturz beim Kanal-Hinzufügen behoben (Thread-GC-Problem)
+* Config-Datei: atomarer Schreibvorgang, Backup bei Korruption
+* Crash-Log unter %APPDATA%\YTChannelWatcher\crash.log
+* Bessere Fehlerbehandlung in allen Worker-Threads
+
+v1.0.0  (2025-03-21)
+---------------------
++ Erstveröffentlichung
++ YouTube-Kanäle per RSS prüfen (kein API-Key nötig)
++ Kanäle per @Handle, URL oder ID hinzufügen
++ System-Tray-Betrieb mit Benachrichtigungen
++ Automatischer Windows-Autostart
++ Video-Thumbnail-Vorschau
++ Direkter "Ansehen"-Button öffnet YouTube im Browser

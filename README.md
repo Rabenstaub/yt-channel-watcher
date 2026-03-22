@@ -2,7 +2,7 @@
 
 > Verpasse nie wieder ein Video deiner Lieblingskanäle – auch wenn YouTube die Abo-Benachrichtigungen abschafft.
 
-[![Download](https://img.shields.io/badge/Download-v1.1.0-blue?style=for-the-badge&logo=windows)](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
+[![Download](https://img.shields.io/badge/Download-v1.2.1-blue?style=for-the-badge&logo=windows)](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
 [![Ko-fi](https://img.shields.io/badge/Spende-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/rabenstaub)
 [![Lizenz](https://img.shields.io/badge/Lizenz-Freeware-green?style=for-the-badge)](LICENSE.txt)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey?style=for-the-badge&logo=windows)](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
@@ -68,6 +68,15 @@ Beim nächsten Windows-Start prüft die App automatisch alle Kanäle.
 ---
 
 ## 📋 Changelog
+
+### v1.2.1
+- Gerichtsstand Memmingen im Disclaimer und LICENSE ergänzt
+
+### v1.2.0
+- Automatische Prüfung alle 4 Stunden (einstellbar: Aus / 1 / 2 / 4 / 6 Std.)
+- Update-Benachrichtigung wenn neue Version auf GitHub verfügbar
+- Gesehene Videos manuell ausblenden (✓ Button auf jeder Karte)
+- Option: gesehene Videos nach dem Ansehen automatisch ausblenden
 
 ### v1.1.0
 - Erster-Start-Dialog mit Nutzungsbedingungen

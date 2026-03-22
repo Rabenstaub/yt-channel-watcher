@@ -35,13 +35,13 @@ Der **YouTube Channel Watcher** prüft beim Windows-Start automatisch alle gespe
 ## 🖥️ Screenshots
 
 ### Neue Videos
-![Neue Videos](screenshots/neue_videos.png)
+![Neue Videos](neue_videos.png)
 
 ### Kanäle verwalten
-![Kanäle verwalten](screenshots/kanaele.png)
+![Kanäle verwalten](kanaele.png)
 
 ### Einstellungen
-![Einstellungen](screenshots/einstellungen.png)
+![Einstellungen](einstellungen.png)
 
 ---
 

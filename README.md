@@ -24,7 +24,7 @@ Der **YouTube Channel Watcher** prüft beim Windows-Start automatisch alle gespe
 ## 📥 Download & Installation
 
 1. [**Installer herunterladen**](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
-2. `YTChannelWatcher_Setup_v1.1.0.exe` ausführen
+2. `YTChannelWatcher_Setup_v1.2.1.exe` ausführen
 3. Installationsanleitung folgen
 4. Fertig – die App startet automatisch mit Windows
 

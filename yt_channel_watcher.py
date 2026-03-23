@@ -33,8 +33,8 @@ from PyQt6.QtGui import (
 # ─── Konstanten ──────────────────────────────────────────────────────────────
 
 APP_NAME     = "YouTube Channel Watcher"
-APP_VERSION  = "1.2.1"
-APP_DATE     = "2026-03-22"
+APP_VERSION  = "1.2.2"
+APP_DATE     = "2026-03-23"
 APP_AUTHOR   = "Christian Diezinger"
 APP_CONTACT  = "rabenstaub@gmail.com"
 APP_KOFI     = "https://ko-fi.com/rabenstaub"
@@ -467,7 +467,7 @@ class VideoCard(QFrame):
             QDesktopServices.openUrl(QUrl(url))
             # Nur automatisch ausblenden wenn Einstellung aktiv
             cfg = load_config()
-            if cfg.get("auto_hide_seen", True):
+            if cfg.get("auto_hide_seen", False):
                 QTimer.singleShot(2000, self._mark_seen)
 
 
@@ -808,10 +808,11 @@ class MainWindow(QMainWindow):
         scroll.setWidgetResizable(True)
 
         self.videos_inner  = QWidget()
-        self.videos_layout = QVBoxLayout(self.videos_inner)
-        self.videos_layout.setSpacing(8)
-        self.videos_layout.setContentsMargins(0, 0, 6, 0)
+        outer = QVBoxLayout(self.videos_inner)
+        outer.setSpacing(0)
+        outer.setContentsMargins(0, 0, 0, 0)
 
+        # Empty-Label ganz oben — bleibt immer im Widget
         self.empty_lbl = QLabel(
             "Noch keine neuen Videos - klicke auf  🔄  Jetzt prüfen\n"
             "oder warte auf den nächsten Windows-Start."
@@ -821,8 +822,15 @@ class MainWindow(QMainWindow):
             f"color:{DARK['muted']}; font-size:13px; padding:50px 20px;"
         )
         self.empty_lbl.setWordWrap(True)
-        self.videos_layout.addWidget(self.empty_lbl)
-        self.videos_layout.addStretch()
+        outer.addWidget(self.empty_lbl)
+
+        # Separates Layout nur für Videokarten
+        cards_widget = QWidget()
+        self.videos_layout = QVBoxLayout(cards_widget)
+        self.videos_layout.setSpacing(8)
+        self.videos_layout.setContentsMargins(0, 0, 6, 0)
+        outer.addWidget(cards_widget)
+        outer.addStretch()
 
         scroll.setWidget(self.videos_inner)
         vbox.addWidget(scroll)
@@ -1253,8 +1261,8 @@ class MainWindow(QMainWindow):
                 f"Fertig - {count} neue(s) Video(s)" if count else "Fertig - Alles aktuell"
             )
 
-            # Video-Liste leeren
-            while self.videos_layout.count() > 1:
+            # Nur Videokarten leeren (empty_lbl bleibt erhalten)
+            while self.videos_layout.count() > 0:
                 item = self.videos_layout.takeAt(0)
                 if item and item.widget():
                     item.widget().deleteLater()
@@ -1262,9 +1270,8 @@ class MainWindow(QMainWindow):
             if new_videos:
                 self.empty_lbl.hide()
                 for v in new_videos:
-                    self.videos_layout.insertWidget(
-                        self.videos_layout.count() - 1, VideoCard(v)
-                    )
+                    card = VideoCard(v)
+                    self.videos_layout.addWidget(card)
                 self._switch_tab(0)
                 self._show_window()
                 self.tray.showMessage(

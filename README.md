@@ -2,7 +2,7 @@
 
 > Verpasse nie wieder ein Video deiner Lieblingskanäle – auch wenn YouTube die Abo-Benachrichtigungen abschafft.
 
-[![Download](https://img.shields.io/badge/Download-v1.2.1-blue?style=for-the-badge&logo=windows)](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
+[![Download](https://img.shields.io/badge/Download-v1.2.3-blue?style=for-the-badge&logo=windows)](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
 [![Ko-fi](https://img.shields.io/badge/Spende-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/rabenstaub)
 [![Lizenz](https://img.shields.io/badge/Lizenz-Freeware-green?style=for-the-badge)](LICENSE.txt)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey?style=for-the-badge&logo=windows)](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
@@ -24,7 +24,7 @@ Der **YouTube Channel Watcher** prüft beim Windows-Start automatisch alle gespe
 ## 📥 Download & Installation
 
 1. [**Installer herunterladen**](https://github.com/Rabenstaub/yt-channel-watcher/releases/latest)
-2. `YTChannelWatcher_Setup_v1.2.1.exe` ausführen
+2. `YTChannelWatcher_Setup_v1.2.3.exe` ausführen
 3. Installationsanleitung folgen
 4. Fertig – die App startet automatisch mit Windows
 
@@ -68,6 +68,14 @@ Beim nächsten Windows-Start prüft die App automatisch alle Kanäle.
 ---
 
 ## 📋 Changelog
+
+### v1.2.3
+- Bugfix: Videos bleiben nach Minimieren/Schließen erhalten
+- Bugfix: Manuell geschlossene Videos werden korrekt aus der Liste entfernt
+
+### v1.2.2
+- Bugfix: Videos wurden nach dem Prüfen nicht angezeigt
+- Bugfix: Auto-Ausblenden Standard auf "Aus" geändert
 
 ### v1.2.1
 - Gerichtsstand Memmingen im Disclaimer und LICENSE ergänzt

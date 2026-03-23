@@ -33,7 +33,7 @@ from PyQt6.QtGui import (
 # ─── Konstanten ──────────────────────────────────────────────────────────────
 
 APP_NAME     = "YouTube Channel Watcher"
-APP_VERSION  = "1.2.2"
+APP_VERSION  = "1.2.3"
 APP_DATE     = "2026-03-23"
 APP_AUTHOR   = "Christian Diezinger"
 APP_CONTACT  = "rabenstaub@gmail.com"
@@ -458,6 +458,20 @@ class VideoCard(QFrame):
             pass
 
     def _mark_seen(self):
+        # Aus der globalen Video-Liste entfernen
+        try:
+            app = QApplication.instance()
+            if app and hasattr(app, '_main_window'):
+                win = app._main_window
+                vid_id = self.video.get("video_id", "")
+                win._current_videos = [
+                    v for v in win._current_videos
+                    if v.get("video_id") != vid_id
+                ]
+                if not win._current_videos:
+                    win.empty_lbl.show()
+        except Exception:
+            pass
         self.setVisible(False)
         self.deleteLater()
 
@@ -668,6 +682,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(f"{APP_NAME}  v{APP_VERSION}")
         self.setMinimumSize(720, 560)
         self.resize(800, 620)
+        self._current_videos = []  # aktuelle Video-Liste im Speicher halten
         self._build_ui()
         self._build_tray()
 
@@ -1261,17 +1276,16 @@ class MainWindow(QMainWindow):
                 f"Fertig - {count} neue(s) Video(s)" if count else "Fertig - Alles aktuell"
             )
 
-            # Nur Videokarten leeren (empty_lbl bleibt erhalten)
-            while self.videos_layout.count() > 0:
-                item = self.videos_layout.takeAt(0)
-                if item and item.widget():
-                    item.widget().deleteLater()
-
             if new_videos:
+                # Neue Videos zur bestehenden Liste hinzufügen (nicht ersetzen)
+                self._current_videos.extend(new_videos)
+
+                # Nur die neuen Karten hinzufügen
                 self.empty_lbl.hide()
                 for v in new_videos:
                     card = VideoCard(v)
                     self.videos_layout.addWidget(card)
+
                 self._switch_tab(0)
                 self._show_window()
                 self.tray.showMessage(
@@ -1281,7 +1295,10 @@ class MainWindow(QMainWindow):
                     6000,
                 )
             else:
-                self.empty_lbl.show()
+                # Nur leeren wenn wirklich keine Videos da sind
+                if not self._current_videos:
+                    self.empty_lbl.show()
+
         except Exception as e:
             print(f"[_on_fetch_done] {e}\n{traceback.format_exc()}")
 
